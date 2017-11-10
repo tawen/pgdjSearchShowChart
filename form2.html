@@ -552,7 +552,7 @@
             $.ajax({
                 type: "get",
                 async: true,
-                url: url + "getLibDataView",
+                url: url + "getLibDataViewBySycode",
                 dataType: "jsonp",
                 jsonp: "callback",
                 data: searchData,
@@ -560,7 +560,7 @@
                 success: function (json) {
                     //generate chart
                     //console.log(json);
-                    //debugger;
+                    debugger;
                     if (json.status == "-1") {
                         alert("查无字段");
                         return;
@@ -595,14 +595,14 @@
                                         }
                                     },
                                     title: {
-                                        text: json.data[i].datalist[j].indexname,
+ text: json.data[i].datalist[j].libname,
                                         style: {
                                             color: Highcharts.getOptions().colors[j]
                                         }
                                     }
                                 });
                                 data.push({
-                                    name: json.data[i].datalist[j].indexname,
+ name: json.data[i].datalist[j].libname,
                                     type: 'column',
                                     yAxis: 0,
                                     data: twodata,
@@ -617,7 +617,7 @@
                                         },
                                     },
                                     title: {
-                                        text: json.data[i].datalist[j].indexname,
+ text: json.data[i].datalist[j].libname,
                                         style: {
                                             color: Highcharts.getOptions().colors[j],
                                         },
@@ -625,8 +625,8 @@
                                     opposite: true
                                 });
                                 data.push({
-                                    name: json.data[i].datalist[j].indexname,
-                                    type: 'spline',
+ name: json.data[i].datalist[j].libname,
+ type: 'column',
                                     yAxis: j,
                                     data: twodata,
                                 });
@@ -662,7 +662,7 @@
                                 zoomType: 'xy'
                             },
                             title: {
-                                text: json.data[i].libname
+ text: json.data[i].indexname
                             },
                             subtitle: {
                                 //text: '数据来源: WorldClimate.com'
@@ -839,6 +839,7 @@
                     $(this).addClass("active").parents(".event-create-add-category-modal").prev().find("ul").html(
                         dom);
                     $(".zhibiaodata").remove();
+                    $(".tsgData").remove();
                     $.ajax({
                         type: "get",
                         async: true,
@@ -896,7 +897,7 @@
 
                 } else if ($(this).parents(".event-create-add-category-modal").attr("id") == "tushuguan") {
                     //图书馆
-
+ $(this).addClass(".create-event-category-hide")
                     if ($(this).addClass("active").parents(".event-create-add-category-modal").prev().find("li")
                         .length < 5) {
                         var value = $(this).attr("value");
@@ -978,7 +979,8 @@
         $doc.on('click.off.modal', function (e) {
             var $target;
             $target = $(e.target);
-            if (!($target.hasClass('create-event-category') || $target.hasClass('icon-event-label-add'))) {
+ //console.log(e.target)
+            if (!($target.hasClass('create-event-category-hide') || $target.hasClass('icon-event-label-add'))) {
                 $eventLabelModal.addClass('hide');
             }
         });
