@@ -1,0 +1,26 @@
+{
+  "name": "pgdjseach",
+  "version": "1.0.0",
+  "description": "评估定级高级搜索",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev":"anywhere -p 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tawen/pgdjSearchShowChart.git"
+  },
+  "keywords": [
+    "sihai5452138"
+  ],
+  "author": "tawen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tawen/pgdjSearchShowChart/issues"
+  },
+  "homepage": "https://github.com/tawen/pgdjSearchShowChart#readme",
+  "devDependencies": {
+    "anywhere": "^1.4.0"
+  }
+}
