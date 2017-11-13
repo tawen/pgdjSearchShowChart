@@ -25,6 +25,7 @@
     <style>
         .seach-condition {
             padding: 50px;
+            position: relative;
         }
     </style>
 </head>
@@ -152,7 +153,7 @@
                 <label for="inputPassword3" class="col-sm-2 control-label">省份选择：</label>
                 <div class="col-sm-10">
                     <div class="event-create-add-category">
-                        <button class="btn create-event-category" id="evt_categoryevt_category">
+                        <button class="btn create-event-category" id="evt_categoryevt_category"  flag="shengfenclick">
                             <span class="icon-event-label-add"></span>
                         </button>
                         <div class="event-create-add-category-list" style="padding-top: 4px;">
@@ -174,7 +175,7 @@
                 <label for="inputPassword3" class="col-sm-2 control-label">市选择：</label>
                 <div class="col-sm-10">
                     <div class="event-create-add-category">
-                        <button class="btn create-event-category" id="evt_category">
+                        <button class="btn create-event-category" id="evt_category"  flag="chegnshiclick">
                             <span class="icon-event-label-add"></span>
                         </button>
                         <div class="event-create-add-category-list" style="padding-top: 4px;">
@@ -222,6 +223,9 @@
                 </div>
             </div>
         </form>
+        <div class="arrowbtn2">
+            <span></span>
+        </div>
     </div>
     <div class="seach-result" style="display:none">
         <div class="arrowbtn">
@@ -522,10 +526,18 @@
         $("#searchbtn").click(function () {
             var libcode = "",
                 sycode = "",
+                cs = "",
+                sf = ""
                 length;
             $(".tsgData").each(function () {
                 libcode += $(this).attr("value") + ";"
             });
+            $(".csData").each(function () {
+                    cs += $(this).attr("value") + ";"
+                });
+                 $(".sfData").each(function () {
+                        sf += $(this).attr("value") + ";"
+                    });
             $(".zhibiaodata").each(function () {
                 sycode += $(this).attr("value") + ";"
             });
@@ -540,8 +552,8 @@
             }
             var searchData = {
                 standardcode: $(".pgbzData").attr("value"), //SD20161214093707,
-                provincecode: (!!$(".sfData").attr("value") ? $(".sfData").attr("value") : "0000"), //340000,
-                citycode: (!!$(".csData").attr("value") ? $(".csData").attr("value") : "0000"), //340000,
+                provincecode: (!!sf ? sf : "0000"), //340000,
+                citycode: (!!cs ? cs : "0000"), //340000,
                 libcode: libcode, //340000,
                 sycode: sycode //340000,
             }
@@ -771,6 +783,11 @@
             $(".seach-condition").slideDown();
         });
 
+        $(".arrowbtn2").click(function () {
+            //debugger;
+            $(".seach-result").slideDown();
+            $(".seach-condition").slideUp();
+        });
         //区位加载  
         $(function () {
             var dom = "";
@@ -795,6 +812,14 @@
             //$(".event-create-add-category-modal").hide();
             $('.event-create-add-label-modal').addClass('hide');
             if ($(this).attr("flag") == "tushuguanclick") {
+                var cs = "",
+                    sf = "";
+                $(".csData").each(function () {
+                    cs += $(this).attr("value") + ";"
+                });
+                $(".sfData").each(function () {
+                    sf += $(this).attr("value") + ";"
+                });
                 $.ajax({
                     type: "get",
                     async: true,
@@ -803,9 +828,9 @@
                     jsonp: "callback",
                     data: {
                         standardcode: $(".pgbzData").attr("value"), //SD20161214093707,
-                        provincecode: (!!$(".sfData").attr("value") ? $(".sfData").attr("value") :
+                        provincecode: (!!sf ? sf :
                             "0000"), //340000,
-                        citycode: (!!$(".csData").attr("value") ? $(".csData").attr("value") : "0000") //340000,
+                        citycode: (!!cs ? cs : "0000") //340000,
                     },
                     jsonpCallback: "flightHandler4",
                     success: function (json) {
@@ -823,10 +848,38 @@
                         }
                     }
                 });
+            }else if($(this).attr("flag") == "chegnshiclick"){
+                //点击城市加号
+                var pc = "";
+                $(".sfData").each(function () {
+                    pc += $(this).attr("value") + ";"
+                });
+                $.ajax({
+                    type: "get",
+                    async: true,
+                    url: url + "getCityByProvince",
+                    dataType: "jsonp",
+                    jsonp: "callback",
+                    data: {
+                        provincecode: ((!!pc)?pc:"0000")
+                    },
+                    jsonpCallback: "flightHandler5",
+                    success: function (json) {
+
+                        //console.log(json)
+                        var dom = "";
+                        for (var z = 0; z < json.length; z++) {
+                            dom += "<li value='" + json[z].code + "'>" + json[z].name + "</li>"
+                        }
+                        $("#addCity").html(dom);
+                    }
+                });
             }
             return $(this).next().next().toggleClass('hide');
 
         });
+
+
 
         //点击添加
         $eventLabelModal.on('click', 'li', function (e) {
@@ -863,36 +916,30 @@
                     //省份选择
                     var dom = '<li class="fade in sfData" type="evt_category" value="' + $(this).attr("pcode") +
                         '">' + $(this).html() + '<span class="icon-close"></span></li>';
-                    $(this).siblings("li").removeClass("active")
-                    $(this).addClass("active").parents(".event-create-add-category-modal").prev().find("ul").html(
-                        dom);
-                    $.ajax({
-                        type: "get",
-                        async: true,
-                        url: url + "getCityByProvince",
-                        dataType: "jsonp",
-                        jsonp: "callback",
-                        data: {
-                            provincecode: $(this).attr("pcode")
-                        },
-                        jsonpCallback: "flightHandler5",
-                        success: function (json) {
-
-                            //console.log(json)
-                            var dom = "";
-                            for (var z = 0; z < json.length; z++) {
-                                dom += "<li value='" + json[z].code + "'>" + json[z].name + "</li>"
-                            }
-                            $("#addCity").html(dom);
-                        }
-                    });
+                    //$(this).siblings("li").removeClass("active")
+                    if(!$(this).hasClass("active")){
+                        $(this).addClass("active").parents(".event-create-add-category-modal").prev().find("ul").append(
+                            dom);
+                    }
+                        
                 } else if ($(this).parents(".event-create-add-category-modal").attr("id") == "chengshi") {
                     //城市选择
                     var dom = '<li class="fade in csData" type="evt_category" value="' + $(this).attr("value") +
                         '">' + $(this).html() + '<span class="icon-close"></span></li>';
-                    $(this).siblings("li").removeClass("active")
-                    $(this).addClass("active").parents(".event-create-add-category-modal").prev().find("ul").html(
-                        dom);
+                    //$(this).siblings("li").removeClass("active");
+                    var value = $(this).attr("value");
+                    var bol = true;
+                        $(".csData").each(function () {
+                            if ($(this).attr("value") == value) {
+                                return bol = false;
+                            }
+                        });
+                        if (bol) {
+                        $(this).addClass("active").parents(".event-create-add-category-modal").prev().find("ul").append(
+                            dom);
+                    }   else {
+                            alert("城市不能重复了")
+                        }                  
 
                 } else if ($(this).parents(".event-create-add-category-modal").attr("id") == "tushuguan") {
                     //图书馆
